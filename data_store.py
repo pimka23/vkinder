@@ -29,5 +29,6 @@ def check_user(engine, profile_id, worksheet_id):
     
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
+    # add_user(engine, 2113, 124512)
     res = check_user(engine, 2113, 1245121)
     print(res)

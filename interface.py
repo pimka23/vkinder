@@ -38,17 +38,15 @@ class BotInterface():
 
         return photo_string
 
-    # k - отличительный параметр, что именно None
     def new_message(self, k):
         for event in self.longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 if k == 0:
-                    # Проверка на числа
                     contains_digit = False
                     for i in event.text:
                         if i.isdigit():
                             contains_digit = True
-                            break  # Прерываем цикл, если найдена цифра
+                            break
                     if contains_digit:
                         self.message_send(event.user_id, 'Введите имя и фамилию без чисел:')
                     else:
@@ -61,12 +59,11 @@ class BotInterface():
                         self.message_send(event.user_id, 'Неверный формат. Введите 1 или 2:')
 
                 if k == 2:
-                    # Проверка на числа
                     contains_digit = False
                     for i in event.text:
                         if i.isdigit():
                             contains_digit = True
-                            break  # Прерываем цикл, если найдена цифра
+                            break
                     if contains_digit:
                         self.message_send(event.user_id, 'Неверный ввод. Введите название города без чисел:')
                     else:
@@ -86,15 +83,15 @@ class BotInterface():
             return self.new_message(0)
 
         if self.params['sex'] is None:
-            self.message_send(event.user_id, 'Введите свой пол (1-муж, 2-жен):')
+            self.message_send(event.user_id, 'Введите ваш пол (1-муж, 2-жен):')
             return self.new_message(1)
 
         elif self.params['city'] is None:
-            self.message_send(event.user_id, 'Введите город:')
+            self.message_send(event.user_id, 'Введите ваш город:')
             return self.new_message(2)
 
         elif self.params['year'] is None:
-            self.message_send(event.user_id, 'Введите дату рождения (дд.мм.гггг):')
+            self.message_send(event.user_id, 'Введите вашу дату рождения (дд.мм.гггг):')
             return self.new_message(3)
 
     def get_profile(self, worksheets, event):
@@ -102,9 +99,7 @@ class BotInterface():
             if worksheets:
                 worksheet = worksheets.pop()
 
-                'проверка анкеты в бд в соотвествии с event.user_id'
                 if not check_user(engine, event.user_id, worksheet['id']):
-                    'добавить анкету в бд в соотвествии с event.user_id'
                     add_user(engine, event.user_id, worksheet['id'])
 
                     yield worksheet
@@ -113,17 +108,14 @@ class BotInterface():
                 worksheets = self.vk_tools.search_worksheet(
                     self.params, self.offset)
 
-# обработка событий / получение сообщений
     def event_handler(self):
         for event in self.longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 if event.text.lower() == 'привет':
-                    '''Логика для получения данных о пользователе'''
                     self.params = self.vk_tools.get_profile_info(event.user_id)
                     self.message_send(
                         event.user_id, f'Привет друг, {self.params["name"]}')
 
-                    # обработка данных, которые не получили
                     self.keys = self.params.keys()
                     for i in self.keys:
                         if self.params[i] is None:
@@ -132,7 +124,6 @@ class BotInterface():
                     self.message_send(event.user_id, 'Вы успешно зарегистрировались!')
 
                 elif event.text.lower() == 'поиск':
-                    '''Логика для поиска анкет'''
                     self.message_send(
                         event.user_id, 'Начинаем поиск...')
 
